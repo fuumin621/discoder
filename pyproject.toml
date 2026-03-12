@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "discoder"
+version = "0.1.0"
+description = "Control AI coding agents from your phone via Discord"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = [
+    "discord.py>=2.3",
+    "click>=8.0",
+]
+
+[project.scripts]
+discoder = "discoder.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/fuumin621/discoder"
+Repository = "https://github.com/fuumin621/discoder"
