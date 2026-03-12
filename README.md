@@ -1,61 +1,63 @@
 # discoder
 
-AIコーディングエージェント（Claude Code等）をスマホからDiscord経由で操作するツール。
+[日本語](README_ja.md)
 
-## 特徴
+Control AI coding agents (Claude Code, etc.) from your phone via Discord.
 
-- Discordスレッド = セッション。スマホからコーディング指示が出せる
-- ターミナル↔Discord間でセッションの双方向引き継ぎ
-- ストリーミング応答（途中経過がリアルタイム表示、ツール実行状況も表示）
-- 返信候補ボタン（応答ごとに次のアクション候補をボタンで提示）
-- ポート開放不要（Discord Gateway、外向き接続のみ）
-- tmuxで常駐させるだけのシンプル運用
+## Features
 
-## セットアップ
+- Discord thread = session. Send coding instructions from your phone
+- Bidirectional session handoff between terminal and Discord
+- Streaming responses (real-time progress with tool execution status)
+- Suggested reply buttons (action candidates presented after each response)
+- No port forwarding needed (Discord Gateway, outbound connections only)
+- Simple operation — just run in tmux
 
-### 1. Discord Bot作成
+## Setup
 
-#### 1-1. アプリケーション作成
+### 1. Create a Discord Bot
 
-1. [Discord Developer Portal](https://discord.com/developers/applications) を開く
-2. 右上の「New Application」→ 名前を入力（例: `discoder`）→「Create」
+#### 1-1. Create Application
 
-#### 1-2. Botトークン取得
+1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
+2. Click "New Application" → enter a name (e.g. `discoder`) → "Create"
 
-1. 左メニュー「Bot」を開く
-2. 「Reset Token」→ 表示されたトークンをコピーして控えておく（後で使う）
-3. 下にスクロールし「MESSAGE CONTENT INTENT」を **ON** にして「Save Changes」
+#### 1-2. Get Bot Token
 
-#### 1-3. 招待URLの生成
+1. Open "Bot" in the left menu
+2. Click "Reset Token" → copy the displayed token (you'll need it later)
+3. Scroll down and turn **ON** "MESSAGE CONTENT INTENT", then "Save Changes"
 
-1. 左メニュー「OAuth2」→「URL Generator」を開く
-2. **SCOPES** で以下にチェック:
+#### 1-3. Generate Invite URL
+
+1. Open "OAuth2" → "URL Generator" in the left menu
+2. Under **SCOPES**, check:
    - `bot`
    - `applications.commands`
-3. 下に表示される **BOTの権限** で以下にチェック:
-   - `メッセージを送信` (Send Messages)
-   - `公開スレッドを作成` (Create Public Threads)
-   - `Threadsでメッセージを送る` (Send Messages in Threads)
-   - `メッセージ履歴を読む` (Read Message History)
-4. ページ最下部に生成されたURLをコピー
+3. Under **BOT PERMISSIONS**, check:
+   - Send Messages
+   - Create Public Threads
+   - Send Messages in Threads
+   - Read Message History
+4. Copy the generated URL at the bottom of the page
 
-#### 1-4. サーバーに招待
+#### 1-4. Invite to Server
 
-1. コピーしたURLをブラウザで開く
-2. 「サーバーに追加」のドロップダウンから招待先のサーバーを選択
-3. 「はい」→「認証」で完了
+1. Open the copied URL in your browser
+2. Select the server to invite the bot to
+3. Confirm and authorize
 
-> **Tips:** Botを追加するにはそのサーバーの「サーバー管理」権限が必要です。自分専用のサーバーがなければ、Discordアプリの左下「+」→「オリジナルの作成」で無料で作れます。
+> **Tip:** You need "Manage Server" permission to add a bot. If you don't have your own server, create one for free via the "+" button in Discord.
 
-### 2. インストール・起動
+### 2. Install & Run
 
 ```bash
 pip install discoder
-discoder init     # 1-2で控えたBotトークンを入力
-discoder start    # Bot起動（tmux内で実行推奨）
+discoder init     # Enter the bot token from step 1-2
+discoder start    # Start the bot (recommended to run inside tmux)
 ```
 
-開発版を使いたい場合:
+For development:
 
 ```bash
 git clone https://github.com/fuumin621/discoder.git
@@ -63,55 +65,55 @@ cd discoder
 pip install -e .
 ```
 
-## 使い方
+## Usage
 
-### Discordコマンド
+### Discord Commands
 
-| コマンド | 場所 | 説明 |
+| Command | Where | Description |
 |---|---|---|
-| `/new <prompt>` | チャンネル | 新規セッション作成（`--dir /path` でディレクトリ指定可） |
-| `/resume [session_id]` | チャンネル | セッション引き継ぎ（ID省略で直近セッション） |
-| `/sessions` | どこでも | アクティブセッション一覧 |
-| `/handoff` | スレッド | ターミナル引き継ぎ用のセッションIDとコマンドを表示 |
-| `/compact` | スレッド | コンテキスト圧縮 |
-| `/model` | スレッド | モデル切替（opus / sonnet / haiku） |
-| `/cost` | スレッド | セッションコスト表示 |
-| `/stop` | スレッド | 実行中のタスクを中断 |
-| `/clear` | どこでも | 全セッション情報をクリア |
+| `/new <prompt>` | Channel | Start a new session (`--dir /path` to specify working directory) |
+| `/resume [session_id]` | Channel | Resume a session (omit ID for most recent) |
+| `/sessions` | Anywhere | List active sessions |
+| `/handoff` | Thread | Show session ID and command for terminal handoff |
+| `/compact` | Thread | Compress conversation context |
+| `/model` | Thread | Switch model (opus / sonnet / haiku) |
+| `/cost` | Thread | Show session cost |
+| `/stop` | Thread | Stop the current running task |
+| `/clear` | Anywhere | Clear all session data |
 
-スレッド内は返信するだけで会話が継続します。
+Simply reply in a thread to continue the conversation.
 
-### セッション引き継ぎ
+### Session Handoff
 
-#### ターミナル → Discord（スマホで続きをやりたい時）
+#### Terminal → Discord (continue on your phone)
 
-スマホでDiscordを開いて `/resume` するだけ。直近のターミナルセッションが引き継がれます。
+Open Discord on your phone and run `/resume`. It picks up your most recent terminal session.
 
-#### Discord → ターミナル（PCに戻った時）
+#### Discord → Terminal (back at your PC)
 
-PCに戻ったらターミナルで `claude --continue` を実行するだけ。直近のセッション（＝Discordで使っていたセッション）が再開されます。
+Run `claude --continue` in your terminal. It resumes the most recent session (the one you were using on Discord).
 
 ```bash
 cd /your/project && claude --continue
 ```
 
-別のセッションを間に挟んだ場合など、特定セッションを再開したい時はスレッド内で `/handoff` → 表示されたコマンドをターミナルで実行。
+To resume a specific session (e.g. if other sessions were started in between), use `/handoff` in the thread and run the displayed command in your terminal.
 
-### CLIコマンド
+### CLI Commands
 
-| コマンド | 説明 |
+| Command | Description |
 |---|---|
-| `discoder init` | Botトークンの初期設定 |
-| `discoder start` | Discord Bot起動（常駐） |
+| `discoder init` | Configure bot token |
+| `discoder start` | Start the Discord bot |
 
-## 注意事項
+## Important Notes
 
-- **`--dangerously-skip-permissions` が常に有効です。** Claude Codeの全ツール（ファイル編集、任意コマンド実行等）が確認なしで実行されます。Discordサーバーへのアクセス権 ≒ マシンの操作権限となるため、**信頼できるメンバーだけのサーバーで使ってください**
-- **タイムアウトは15分です。** それを超えるとセッションが中断されます。長時間かかる処理（推論実行等）はtmux経由で実行するようプロンプトで指示してください
-- **画像・ファイルの添付には対応していません。** テキストメッセージのみ処理されます
-- **メッセージはキューイングされます。** 応答中に次のメッセージを送った場合、前の処理が完了してから順番に実行されます
+- **`--dangerously-skip-permissions` is always enabled.** All Claude Code tools (file editing, arbitrary command execution, etc.) run without confirmation. Discord server access ≈ machine access — **use only on servers with trusted members**
+- **Timeout is 15 minutes.** Sessions are interrupted after that. For long-running tasks, instruct Claude to use tmux
+- **Image/file attachments are not supported.** Only text messages are processed
+- **Messages are queued.** If you send a message while a response is in progress, it will be processed after the current one completes
 
-## 動作要件
+## Requirements
 
 - Python 3.10+
-- Claude Code CLI（`claude` コマンドがPATHに通っていて、API認証済みであること）
+- Claude Code CLI (`claude` command in PATH, authenticated)
