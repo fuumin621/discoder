@@ -32,10 +32,10 @@ AIコーディングエージェント（Claude Code等）をスマホからDisc
 2. **SCOPES** で以下にチェック:
    - `bot`
    - `applications.commands`
-3. 下に表示される **BOT PERMISSIONS** で以下にチェック:
+3. 下に表示される **BOTの権限** で以下にチェック:
    - `メッセージを送信` (Send Messages)
-   - `公開スレッドの作成` (Create Public Threads)
-   - `スレッドでメッセージを送信` (Send Messages in Threads)
+   - `公開スレッドを作成` (Create Public Threads)
+   - `Threadsでメッセージを送る` (Send Messages in Threads)
    - `メッセージ履歴を読む` (Read Message History)
 4. ページ最下部に生成されたURLをコピー
 
