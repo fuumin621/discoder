@@ -59,9 +59,10 @@ class SuggestView(discord.ui.View):
     """Buttons for suggested replies."""
 
     def __init__(self, suggestions: list[str], session_info: dict, bot: "DiscoderBot"):
-        super().__init__(timeout=300)
+        super().__init__(timeout=None)
         self.bot = bot
         self.session_info = session_info
+        self.suggestions = suggestions
 
         for i, text in enumerate(suggestions[:4]):
             button = discord.ui.Button(
