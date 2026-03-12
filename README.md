@@ -15,13 +15,37 @@ AIコーディングエージェント（Claude Code等）をスマホからDisc
 
 ### 1. Discord Bot作成
 
-1. [Discord Developer Portal](https://discord.com/developers/applications) でアプリ作成
-2. 左メニュー「Bot」→ トークンをコピー
-3. 「MESSAGE CONTENT INTENT」をONにする
-4. 左メニュー「OAuth2」→「URL Generator」
-   - Scopes: `bot`, `applications.commands`
-   - Permissions: `Send Messages`, `Create Public Threads`, `Send Messages in Threads`, `Read Message History`
-5. 生成されたURLでBotを自分のサーバーに招待
+#### 1-1. アプリケーション作成
+
+1. [Discord Developer Portal](https://discord.com/developers/applications) を開く
+2. 右上の「New Application」→ 名前を入力（例: `discoder`）→「Create」
+
+#### 1-2. Botトークン取得
+
+1. 左メニュー「Bot」を開く
+2. 「Reset Token」→ 表示されたトークンをコピーして控えておく（後で使う）
+3. 下にスクロールし「MESSAGE CONTENT INTENT」を **ON** にして「Save Changes」
+
+#### 1-3. 招待URLの生成
+
+1. 左メニュー「OAuth2」→「URL Generator」を開く
+2. **SCOPES** で以下にチェック:
+   - `bot`
+   - `applications.commands`
+3. 下に表示される **BOT PERMISSIONS** で以下にチェック:
+   - `メッセージを送信` (Send Messages)
+   - `公開スレッドの作成` (Create Public Threads)
+   - `スレッドでメッセージを送信` (Send Messages in Threads)
+   - `メッセージ履歴を読む` (Read Message History)
+4. ページ最下部に生成されたURLをコピー
+
+#### 1-4. サーバーに招待
+
+1. コピーしたURLをブラウザで開く
+2. 「サーバーに追加」のドロップダウンから招待先のサーバーを選択
+3. 「はい」→「認証」で完了
+
+> **Tips:** Botを追加するにはそのサーバーの「サーバー管理」権限が必要です。自分専用のサーバーがなければ、Discordアプリの左下「+」→「オリジナルの作成」で無料で作れます。
 
 ### 2. インストール・起動
 
@@ -29,11 +53,13 @@ AIコーディングエージェント（Claude Code等）をスマホからDisc
 git clone https://github.com/fuumin621/discoder.git
 cd discoder
 pip install -e .
-discoder init     # Botトークンを入力
+discoder init     # 1-2で控えたBotトークンを入力
 discoder start    # Bot起動（tmux内で実行推奨）
 ```
 
-## Discordコマンド
+## 使い方
+
+### Discordコマンド
 
 | コマンド | 場所 | 説明 |
 |---|---|---|
@@ -49,13 +75,13 @@ discoder start    # Bot起動（tmux内で実行推奨）
 
 スレッド内は返信するだけで会話が継続します。
 
-## セッション引き継ぎ
+### セッション引き継ぎ
 
-### ターミナル → Discord（スマホで続きをやりたい時）
+#### ターミナル → Discord（スマホで続きをやりたい時）
 
 スマホでDiscordを開いて `/resume` するだけ。直近のターミナルセッションが引き継がれます。
 
-### Discord → ターミナル（PCに戻った時）
+#### Discord → ターミナル（PCに戻った時）
 
 PCに戻ったらターミナルで `claude --continue` を実行するだけ。直近のセッション（＝Discordで使っていたセッション）が再開されます。
 
@@ -65,7 +91,7 @@ cd /your/project && claude --continue
 
 別のセッションを間に挟んだ場合など、特定セッションを再開したい時はスレッド内で `/handoff` → 表示されたコマンドをターミナルで実行。
 
-## CLIコマンド
+### CLIコマンド
 
 | コマンド | 説明 |
 |---|---|
