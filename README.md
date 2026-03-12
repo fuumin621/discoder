@@ -50,11 +50,17 @@ AIコーディングエージェント（Claude Code等）をスマホからDisc
 ### 2. インストール・起動
 
 ```bash
+pip install discoder
+discoder init     # 1-2で控えたBotトークンを入力
+discoder start    # Bot起動（tmux内で実行推奨）
+```
+
+開発版を使いたい場合:
+
+```bash
 git clone https://github.com/fuumin621/discoder.git
 cd discoder
 pip install -e .
-discoder init     # 1-2で控えたBotトークンを入力
-discoder start    # Bot起動（tmux内で実行推奨）
 ```
 
 ## 使い方
