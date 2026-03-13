@@ -4,6 +4,10 @@
 
 AIコーディングエージェント（Claude Code等）をスマホからDiscord経由で操作するツール。
 
+<p align="center">
+  <img src="demo.jpg" alt="discoder demo" width="300">
+</p>
+
 ## 特徴
 
 - Discordスレッド = セッション。スマホからコーディング指示が出せる

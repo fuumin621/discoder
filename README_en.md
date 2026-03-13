@@ -4,6 +4,10 @@
 
 Control AI coding agents (Claude Code, etc.) from your phone via Discord.
 
+<p align="center">
+  <img src="demo.jpg" alt="discoder demo" width="300">
+</p>
+
 ## Features
 
 - Discord thread = session. Send coding instructions from your phone
