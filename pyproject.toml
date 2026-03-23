@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "discoder"
-version = "0.2.0"
+version = "0.2.1"
 description = "Control AI coding agents from your phone via Discord"
 readme = "README.md"
 license = "MIT"
