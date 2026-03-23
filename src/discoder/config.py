@@ -30,3 +30,15 @@ def set_token(token: str) -> None:
     config = load_config()
     config["discord_token"] = token
     save_config(config)
+
+
+def get_backend() -> str:
+    """Get configured backend name (default: claude)."""
+    return load_config().get("backend", "claude")
+
+
+def set_backend(backend: str) -> None:
+    """Save backend choice to config."""
+    config = load_config()
+    config["backend"] = backend
+    save_config(config)
