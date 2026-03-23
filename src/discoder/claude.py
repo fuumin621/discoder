@@ -14,6 +14,14 @@ logger = logging.getLogger(__name__)
 
 _BASE_ENV = {**os.environ, "CLAUDECODE": "", "IS_SANDBOX": "1"}
 
+
+def _kill_safe(proc):
+    """Kill a subprocess, ignoring ProcessLookupError if already exited."""
+    try:
+        proc.kill()
+    except ProcessLookupError:
+        pass
+
 _BACKENDS: dict[str, type[Backend]] = {
     "claude": ClaudeBackend,
     "codex": CodexBackend,
@@ -113,15 +121,15 @@ async def stream_claude(
                 yield (event_type, data)
 
     except asyncio.TimeoutError:
-        proc.kill()
+        _kill_safe(proc)
         yield ("error", "Timed out")
         return
     except (asyncio.CancelledError, GeneratorExit):
-        proc.kill()
+        _kill_safe(proc)
         await proc.wait()
         return
     except Exception as e:
-        proc.kill()
+        _kill_safe(proc)
         yield ("error", str(e))
         return
 
