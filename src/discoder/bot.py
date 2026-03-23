@@ -9,7 +9,7 @@ import time as _time
 import discord
 from discord import app_commands
 
-from .claude import run_claude, stream_claude
+from .claude import run_claude, stream_claude, get_backend
 from .session import SessionStore
 
 logger = logging.getLogger(__name__)
@@ -248,11 +248,13 @@ class DiscoderBot(discord.Client):
 
             sid = info["session_id"]
             cwd = info["cwd"]
+            backend = get_backend()
+            handoff_cmd = backend.handoff_command(sid, cwd)
             await interaction.response.send_message(
                 f"**Session ID:** `{sid}`\n"
                 f"**Directory:** `{cwd}`\n\n"
                 f"**Resume in terminal:**\n"
-                f"```\ncd {cwd} && claude --resume {sid}\n```",
+                f"```\n{handoff_cmd}\n```",
                 ephemeral=True,
             )
 

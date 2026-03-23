@@ -61,6 +61,15 @@ discoder init     # 1-2で控えたBotトークンを入力
 discoder start    # Bot起動（tmux内で実行推奨）
 ```
 
+#### バックエンド切り替え（Codex対応）
+
+デフォルトはClaude Codeバックエンドです。OpenAI Codex CLIを使う場合:
+
+```bash
+discoder start --backend codex   # Codexバックエンドで起動
+discoder set-backend codex       # デフォルトをCodexに変更
+```
+
 開発版を使いたい場合:
 
 ```bash
@@ -109,10 +118,12 @@ cd /your/project && claude --continue
 |---|---|
 | `discoder init` | Botトークンの初期設定 |
 | `discoder start` | Discord Bot起動（常駐） |
+| `discoder start --backend codex` | Codexバックエンドで起動 |
+| `discoder set-backend <name>` | デフォルトバックエンドを変更（claude / codex） |
 
 ## 注意事項
 
-- **`--dangerously-skip-permissions` が常に有効です。** Claude Codeの全ツール（ファイル編集、任意コマンド実行等）が確認なしで実行されます。Discordサーバーへのアクセス権 ≒ マシンの操作権限となるため、**信頼できるメンバーだけのサーバーで使ってください**
+- **権限チェックは常にスキップされます。** Claude Codeでは `--dangerously-skip-permissions`、Codexでは `--dangerously-bypass-approvals-and-sandbox` が有効です。全ツール（ファイル編集、任意コマンド実行等）が確認なしで実行されます。Discordサーバーへのアクセス権 ≒ マシンの操作権限となるため、**信頼できるメンバーだけのサーバーで使ってください**
 - **タイムアウトは15分です。** それを超えるとセッションが中断されます。長時間かかる処理（推論実行等）はtmux経由で実行するようプロンプトで指示してください
 - **画像・ファイルの添付には対応していません。** テキストメッセージのみ処理されます
 - **メッセージはキューイングされます。** 応答中に次のメッセージを送った場合、前の処理が完了してから順番に実行されます
@@ -120,4 +131,6 @@ cd /your/project && claude --continue
 ## 動作要件
 
 - Python 3.10+
-- Claude Code CLI（`claude` コマンドがPATHに通っていて、API認証済みであること）
+- 以下のいずれか（使用するバックエンドに応じて）:
+  - Claude Code CLI（`claude` コマンドがPATHに通っていて、API認証済みであること）
+  - Codex CLI（`codex` コマンドがPATHに通っていて、認証済みであること）
