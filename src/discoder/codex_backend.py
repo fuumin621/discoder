@@ -43,10 +43,11 @@ class CodexBackend(Backend):
             cmd = ["codex", "exec", "resume", session_id, prompt]
         else:
             cmd = ["codex", "exec", prompt]
+            # -C is only supported on fresh exec, not on resume
+            if cwd:
+                cmd.extend(["-C", cwd])
         if model:
             cmd.extend(["-m", model])
-        if cwd:
-            cmd.extend(["-C", cwd])
         cmd.append("--dangerously-bypass-approvals-and-sandbox")
         return cmd
 
@@ -64,10 +65,11 @@ class CodexBackend(Backend):
             cmd = ["codex", "exec", "resume", session_id, "--json", prompt]
         else:
             cmd = ["codex", "exec", "--json", prompt]
+            # -C is only supported on fresh exec, not on resume
+            if cwd:
+                cmd.extend(["-C", cwd])
         if model:
             cmd.extend(["-m", model])
-        if cwd:
-            cmd.extend(["-C", cwd])
         cmd.append("--dangerously-bypass-approvals-and-sandbox")
         return cmd
 
