@@ -115,9 +115,18 @@ async def stream_claude(
         limit=1024 * 1024,  # 1MB line buffer for large stream-json responses
     )
 
+    # Hold the final "done"/"error" event until the subprocess has exited.
+    # Claude Code flushes its session .jsonl *after* emitting the result
+    # event; if the caller breaks on "done" and the generator is closed,
+    # the subprocess gets killed mid-flush, leaving a stub session file
+    # (only a queue-operation marker) that can't be resumed.
+    pending_final: tuple[str, object] | None = None
     try:
         async with asyncio.timeout(timeout):
             async for event_type, data in backend.parse_stream(proc.stdout, session_id):
+                if event_type in ("done", "error"):
+                    pending_final = (event_type, data)
+                    continue
                 yield (event_type, data)
 
     except asyncio.TimeoutError:
@@ -133,9 +142,20 @@ async def stream_claude(
         yield ("error", str(e))
         return
 
-    await proc.wait()
-    if proc.returncode != 0:
+    # Let the subprocess finish writing its session file before we hand
+    # the final event up to the caller (who will likely break the loop).
+    try:
+        await asyncio.wait_for(proc.wait(), timeout=10.0)
+    except asyncio.TimeoutError:
+        _kill_safe(proc)
+        await proc.wait()
+
+    if proc.returncode != 0 and pending_final is None:
         stderr = await proc.stderr.read()
         error_text = stderr.decode().strip()
         if error_text:
             yield ("error", error_text)
+            return
+
+    if pending_final is not None:
+        yield pending_final
