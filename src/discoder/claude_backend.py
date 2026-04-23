@@ -156,7 +156,16 @@ class ClaudeBackend(Backend):
                         tool_input_json += delta.get("partial_json", "")
 
             elif msg_type == "result":
-                result_session_id = data.get("session_id", result_session_id)
+                new_session_id = data.get("session_id", result_session_id)
+                if data.get("is_error") or data.get("errors"):
+                    # On error (e.g. failed --resume) Claude returns a fresh
+                    # ephemeral session_id with no persisted content — don't
+                    # propagate it, or sessions.json gets poisoned.
+                    errs = data.get("errors") or []
+                    msg = "; ".join(str(e) for e in errs) if errs else "claude returned error"
+                    yield ("error", msg)
+                    return
+                result_session_id = new_session_id
                 yield ("done", {
                     "result": data.get("result", full_text),
                     "session_id": result_session_id,
